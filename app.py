@@ -1,9 +1,10 @@
 #the below three lines are all for the importing of flask.
-from flask import Flask, render_template, request, redirect, url_for, request, session, abort, flash
+from flask import Flask, render_template, request, redirect, url_for, request, session, abort, flash, make_response
 #flask_sqlaclchemy is how the account.db database connects to the python and html pages
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 import os
+import random
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
 from AssetDBdef import *
@@ -17,9 +18,12 @@ app.app_context().push()
 engine = create_engine('sqlite:///Accounts.db', echo=True)
 #the line below is the variable we will be using for error handling. Only one variable i needed as it is reused multiple times throughout the code.
 incorrect = ("ERROR")
+LoginCountView = ("Test")
 #the variable below is how we set if the user is a admin or not.
 Admincheck = False
-
+LoginCount = 0
+testing = 1
+firsttimecheck = False
 #/// is for relative paths and //// is for absolute paths
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -36,19 +40,38 @@ class Todo(db.Model):
 db.create_all()
 
 #below is a function, these function are called in the HTML file to be used.
-@app.get("/")
+
+#@app.get("/")
+@app.route('/',methods=['GET'])
 def home():
     #the line below allow for the Admincheck variable to have its value changes in and outside of these function.
     global Admincheck
+    global LoginCount
+    global locklogin
     #the below two lines are used to allow data to the write in this function
     Session = sessionmaker(bind=engine)
     session = Session()
     #this line allows the data from the database to the read by the html file
     Asset_List = session.query(AssetDB).all()
     Admincheck = False
+    LoginCount = 5
+    global Loginsession
+    global logged_in
+    logged_in = false
+    Loginsession = make_response(render_template("logins.html"))
+    Loginsession.set_cookie('SessionID','username')
+    print(Loginsession)
+    LoginsessionID = request.cookies.get('SessionID')
+    print(LoginsessionID)
+    locklogin = "Log in"
+    print('SessionID')
+    #session[LoginCount] = 5
     #this line calls the html file to be used.
-    return render_template("logins.html",Asset_List=Asset_List)
+    return render_template("logins.html", Loginsession = Loginsession, Asset_List=Asset_List)
 
+@app.route('/',methods=['GET'])
+def home2():
+    session[LoginCount] = 5
 
 @app.post("/add")
 def add():
@@ -141,12 +164,15 @@ def deleteUser(User_id):
 #this function is used to navigate the website
 @app.route('/basenav')
 def Mainpage():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    #the line below is to collect the asset database and store in a variable that can be used by the html page
-    Asset_List = session.query(AssetDB).all()
-    #the Asset_List=Asset_List using the variable to create function that can be used in the html page
-    return render_template('base.html',Asset_List=Asset_List)
+    if logged_in == true:
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        #the line below is to collect the asset database and store in a variable that can be used by the html page
+        Asset_List = session.query(AssetDB).all()
+        #the Asset_List=Asset_List using the variable to create function that can be used in the html page
+        return render_template('base.html',Asset_List=Asset_List)
+    else:
+        return render_template('logins.html')
 
 @app.route('/Usernav')
 def Userpage():
@@ -160,7 +186,19 @@ def Userpage():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
+    Loginsession.set_cookie('SessionID','username')
+    LoginsessionID = request.cookies.get('SessionID')
+    print("aaaaa1")
+    print(LoginsessionID)
+    print(Loginsession)
+    print("aaaaa2")
+    if 'SessionID' in request.cookies:
+        print("Yes")
+    else:
+        print("Na")
     global Admincheck
+    global LoginCount
+    global logged_in
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
     POST_ADMIN = request.form.get('Admincheck')
@@ -175,11 +213,33 @@ def do_admin_login():
     if result:
         if result.admin == True:
             Admincheck = True
-        session['logged_in'] = True
+        #session['logged_in'] = True
+        logged_in = true
         return redirect(url_for("Mainpage"))
     else:
+        print(LoginCount)
+        LoginCount -= 1
+        if LoginCount==1:
+            client_ip= session.get('client_ip')
+            cookietest= session.get("what")
+            print(LoginCount)
+            return render_template('logins.html',incorrect = ('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error'))
+        if LoginCount<0:
+            client_ip= session.get('client_ip')
+            cookietest= session.get("what")
+            print(LoginCount)
+            print(client_ip)
+            print(cookietest)
+            #flash('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error 2')
+            return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
+        #render_template('logins.html',LockedLogin = ("disabled"))
+        #return render_template('logins.html',LoginCountView = (LoginCount))
+        #return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
+        else:
+            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5  % LoginCount, error 1'))
+            flash('Invalid login credentials, Attempts %d of 5'  % LoginCount, 'error')
         return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
-    
+        
 @app.route('/newuser', methods=['POST'])
 def addnewuser():
     POST_USERNAME = str(request.form['username'])
