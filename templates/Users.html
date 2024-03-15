@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</head>
+
+<body>
+    <div style="margin-top: 50px;" class="ui container">
+        <h1 class="ui center aligned header">Accounts</h1>
+
+        <form class="ui form" action="/addUser" method="post">
+            <div class="field">
+                <H2>Create a new account</H2>
+                <label>Username</label>
+                <input type="text" name="UsernameInput" placeholder="Please enter the accounts username"><br>
+                <label>Password</label>
+                <input type="text" name="PasswordInput" placeholder="Please enter the accounts password"><br>
+                <label for="admin">Do you need to create an admin account?</label>
+                <input type="checkbox" class="login-field" name="admin" checked="1">
+            </div>
+            <button class="ui blue button" type="submit">Create Account</button>
+        </form>
+
+        <hr>
+
+        <h2>Manage Accounts</h2>
+        {% for User in User_list %}
+        <div class="ui segment">
+            <p class="ui big header">Account ID: {{User.id }} | Username: {{ User.username }} | Password: {{ User.password }}</p>
+
+            {% if User.admin == False %}
+            <span class="ui gray label">Not Admin</span>
+            {% else %}
+            <span class="ui green label">Admin</span>
+            {% endif %}
+
+            <a class="ui blue button" href="/updateUser/{{ User.id }}">Change Admin status</a>
+            <a class="ui red button" href="/deleteUser/{{ User.id }}">Delete Account</a>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('Mainpage')}}">
+            <button class="ui green button">Go to Asset Page</button>
+        </a>
+    </div>
+</body>
+
+</html>

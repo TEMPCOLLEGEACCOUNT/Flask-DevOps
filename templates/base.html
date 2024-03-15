@@ -1,0 +1,78 @@
+<!--The line below sets the file type to be a html-->
+<!DOCTYPE html>
+<!--the line below sets the html language as english-->
+<html lang="en">
+
+<!--the header is here the first content the file reads and so it acts a set up for the file-->
+<head>
+    <!--charset="UTF-8" lets the html file use the UTF-8 unicode standard, which give the file a large array of characters and symbols to use"-->
+    <meta charset="UTF-8">
+    <!--the line below is setting up how the HTML file will be displayed-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--the line below sets the title of the html file, this title is used for categorization for a formating view.-->
+    <title>Base App</title>
+
+    <!--the line below call a stylesheet, this stylesheet is used for many of the visuals that will be called later in the code-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</head>
+
+<!--the body is where the main code is ran-->
+<body>
+    <!--div's are used to create areas of code that are split form each other-->
+    <div style="margin-top: 50px;" class="ui container">
+        <!--h1 means header1 so the two lines below are the headers of the div-->
+        <h1 class="ui center aligned header">Asset Register</h1>
+        <h2>Register a new asset</h2>
+        <!--form allows the file to create an area that data can be collected and used in the python script using functions that get called by the html-->
+        <form class="ui form" action="/add" method="post">
+            <div class="field">
+                <label>Asset Name</label>
+                <!--the line below allows for the html to collect data from the website, then the python script can use this input in a function-->
+                <input type="text" name="AssetName" placeholder="Enter the Asset Name"><br>
+                <label>Asset Description</label>
+                <input type="text" name="Assetdescription" placeholder="Enter the assets description"><br>
+                <label>Asset Number</label>
+                <input type="text" name="AssetNumber" placeholder="Enter the assets number"><br>
+                <label>Asset Notes</label>
+                <input type="text" name="Assetnotes" placeholder="Please enter any asset notes"><br>
+            </div>
+            <!--this line create a button that submits the data, so this button activates the python function that collects the data from the inputs-->
+            <button class="ui blue button" type="submit">Create Asset</button>
+        </form>
+
+        <hr>
+        <h2>Manage assets</h2>
+        <!--the line below sets the database that will be called and the function that was created in the python function to navigate to this html page-->
+        {% for AssetDB in Asset_List %}
+        <div class="ui segment">
+            <!--the five lines below are used to display the data from the database on the website-->
+            <p class="ui small header">Name: {{ AssetDB.AssetName }}</p>
+            <p class="ui small header">Description: {{ AssetDB.AssetDescription }}</p>
+            <p class="ui small header">Number: {{ AssetDB.AssetNumber }}</p>
+            <p class="ui small header">Notes: {{ AssetDB.AssetNotes }}</p>
+            <p class="ui small header">Database ID: {{ AssetDB.id }}</p>
+
+            <!--the five lines below check if boolean value from the database is true or false and depending on which a visual is changed in the html-->
+            {% if AssetDB.AssetSignedoff == False %}
+            <span class="ui gray label">Not Signed Off</span>
+            {% else %}
+            <span class="ui green label">Asset Signed Off</span>
+            {% endif %}
+
+            <!--the two lines below are buttons that call functions in the python script-->
+            <a class="ui blue button" href="/update/{{ AssetDB.id }}">Sign off</a>
+            <a class="ui red button" href="/delete/{{ AssetDB.id }}">Delete</a>
+        </div>
+        {% endfor %}
+        <!--the six lines below are buttons that navigate to the two other html pages using a python function-->
+        <a href="{{ url_for('Userpage')}}">
+            <button class="ui green button">Go to User Page</button>
+        </a>
+        <a href="{{ url_for('home')}}">
+            <button class="ui green button">Log Out</button>
+        </a>
+    </div>
+</body>
+
+</html>
