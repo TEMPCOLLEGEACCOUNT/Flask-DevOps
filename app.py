@@ -54,6 +54,7 @@ def home():
 def add():
     Session = sessionmaker(bind=engine)
     session = Session()
+    #git testing
     #the below 4 lines all collect data from the html page to the used in the python function | The str() means that the data is collected as a string value
     title = str(request.form.get("AssetName"))
     AssetDescription = str(request.form.get("Assetdescription"))
