@@ -12,15 +12,16 @@
 </div>
 <div class="login-form">
 <div class="control-group">
-				<input type="text" class="login-field" value="" placeholder="username" name="username">
+				<input type="text" class="login-field" value="" placeholder="username" name="username" {{LockedLogin}}>
 <label class="login-field-icon fui-user" for="login-name"></label></div>
 <div class="control-group">
-				<input type="password" class="login-field" value="" placeholder="password" name="password">
+				<input type="password" class="login-field" value="" placeholder="password" name="password" {{LockedLogin}}>
 <label class="login-field-icon fui-lock" for="login-pass"></label></div>
 <label for="MyBooleanValue">Please declare if you are an admin</label>
 <input type="checkbox" class="login-field" name="Admincheck" checked="1">
-<input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+<input type="submit" value="Log in" class="btn btn-primary btn-large btn-block" {{LockedLogin}}>
 <p>{{incorrect}}</p>
+<p>{{LinkError}}</p>
 </div>
 </div>
 </div>
