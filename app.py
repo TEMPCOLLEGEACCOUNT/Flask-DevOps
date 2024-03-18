@@ -8,8 +8,7 @@ import random
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
 from AssetDBdef import *
-
-
+import unittest
 
 app = Flask(__name__)
 app.secret_key = "192837465123456789987654321"
