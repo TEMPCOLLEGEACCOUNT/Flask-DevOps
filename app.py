@@ -176,6 +176,7 @@ def Mainpage():
         #the line below is to collect the asset database and store in a variable that can be used by the html page
         Asset_List = session.query(AssetDB).all()
         #the Asset_List=Asset_List using the variable to create function that can be used in the html page
+        logged_in = false
         return render_template('base.html',Asset_List=Asset_List)
     else:
         return render_template('logins.html')
