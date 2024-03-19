@@ -8,7 +8,8 @@ import random
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
 from AssetDBdef import *
-import pytest
+import time
+from timeit import default_timer
 
 app = Flask(__name__)
 app.secret_key = "192837465123456789987654321"
@@ -23,6 +24,9 @@ Admincheck = False
 LoginCount = 0
 testing = 1
 firsttimecheck = False
+start_time=time.time()
+start = default_timer()
+logged_in = false
 #/// is for relative paths and //// is for absolute paths
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -47,6 +51,7 @@ def home():
     global Admincheck
     global LoginCount
     global locklogin
+    print(start_time)
     #the below two lines are used to allow data to the write in this function
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -56,6 +61,7 @@ def home():
     LoginCount = 5
     global Loginsession
     global logged_in
+    logged_in = false
     Loginsession = make_response(render_template("logins.html"))
     Loginsession.set_cookie('SessionID','username')
     print(Loginsession)
@@ -162,6 +168,7 @@ def deleteUser(User_id):
 #this function is used to navigate the website
 @app.route('/basenav')
 def Mainpage():
+    global logged_in
     if logged_in == true:
         print(logged_in)
         Session = sessionmaker(bind=engine)
@@ -185,6 +192,9 @@ def Userpage():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
+    print(start_time)
+    duration = default_timer() - start
+    print(duration)
     Loginsession.set_cookie('SessionID','username')
     LoginsessionID = request.cookies.get('SessionID')
     print("aaaaa1")
@@ -198,6 +208,7 @@ def do_admin_login():
     global Admincheck
     global LoginCount
     global logged_in
+    logged_in = false
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
     POST_ADMIN = request.form.get('Admincheck')
