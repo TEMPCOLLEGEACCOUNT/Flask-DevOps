@@ -224,8 +224,11 @@ def do_admin_login():
         if result.admin == True:
             Admincheck = True
         #session['logged_in'] = True
-        logged_in = true
-        return redirect(url_for("Mainpage"))
+        if LoginCount <= 0:
+            return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
+        else:
+                logged_in = true
+                return redirect(url_for("Mainpage"))
     else:
         print(LoginCount)
         LoginCount -= 1
@@ -233,8 +236,8 @@ def do_admin_login():
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
             print(LoginCount)
-            return render_template('logins.html',incorrect = ('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error'))
-        if LoginCount<0:
+            return render_template('logins.html',incorrect = ('This is your last attempt, %s will be blocked, Attempt %d of 5'  % (client_ip,LoginCount), 'error'))
+        if LoginCount<=0:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
             print(LoginCount)
@@ -246,7 +249,8 @@ def do_admin_login():
         #return render_template('logins.html',LoginCountView = (LoginCount))
         #return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         else:
-            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5  % LoginCount, error 1'))
+            client_ip= session.get('client_ip')
+            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5' % (LoginCount), 'LoginCount'))
             flash('Invalid login credentials, Attempts %d of 5'  % LoginCount, 'error')
         return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         
