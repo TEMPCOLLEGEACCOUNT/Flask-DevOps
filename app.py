@@ -56,7 +56,6 @@ def home():
     LoginCount = 5
     global Loginsession
     global logged_in
-    logged_in = false
     Loginsession = make_response(render_template("logins.html"))
     Loginsession.set_cookie('SessionID','username')
     print(Loginsession)
@@ -164,6 +163,7 @@ def deleteUser(User_id):
 @app.route('/basenav')
 def Mainpage():
     if logged_in == true:
+        print(logged_in)
         Session = sessionmaker(bind=engine)
         session = Session()
         #the line below is to collect the asset database and store in a variable that can be used by the html page
