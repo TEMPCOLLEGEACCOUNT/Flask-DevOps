@@ -237,7 +237,7 @@ def do_admin_login():
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
             print(LoginCount)
-            return render_template('logins.html',incorrect = ('This is your last attempt, %s will be blocked, Attempt %d of 5'  % (client_ip,LoginCount), 'error'))
+            return render_template('logins.html',incorrect = ('This is your last attempt, Attempt %d of 5'  % (LoginCount)))
         if LoginCount<=0:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
@@ -251,7 +251,7 @@ def do_admin_login():
         #return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         else:
             client_ip= session.get('client_ip')
-            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5' % (LoginCount), 'LoginCount'))
+            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5' % (LoginCount)))
             flash('Invalid login credentials, Attempts %d of 5'  % LoginCount, 'error')
         return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         
