@@ -64,11 +64,8 @@ def home():
     logged_in = false
     Loginsession = make_response(render_template("logins.html"))
     Loginsession.set_cookie('SessionID','username')
-    print(Loginsession)
     LoginsessionID = request.cookies.get('SessionID')
-    print(LoginsessionID)
     locklogin = "Log in"
-    print('SessionID')
     #session[LoginCount] = 5
     #this line calls the html file to be used.
     return render_template("logins.html", Loginsession = Loginsession, Asset_List=Asset_List)
@@ -193,15 +190,9 @@ def Userpage():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    print(start_time)
     duration = default_timer() - start
-    print(duration)
     Loginsession.set_cookie('SessionID','username')
     LoginsessionID = request.cookies.get('SessionID')
-    print("aaaaa1")
-    print(LoginsessionID)
-    print(Loginsession)
-    print("aaaaa2")
     if 'SessionID' in request.cookies:
         print("Yes")
     else:
@@ -227,26 +218,20 @@ def do_admin_login():
     if result:
         if result.admin == True:
             Admincheck = True
-        #session['logged_in'] = True
         if LoginCount <= 0:
             return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
         else:
                 logged_in = true
                 return redirect(url_for("Mainpage"))
     else:
-        print(LoginCount)
         LoginCount -= 1
         if LoginCount==1:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
-            print(LoginCount)
             return render_template('logins.html',incorrect = ('This is your last attempt, Attempt %d of 5'  % (LoginCount)))
         if LoginCount<=0:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
-            print(LoginCount)
-            print(client_ip)
-            print(cookietest)
             #flash('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error 2')
             return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
         #render_template('logins.html',LockedLogin = ("disabled"))
