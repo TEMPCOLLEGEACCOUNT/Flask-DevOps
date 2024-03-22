@@ -64,11 +64,8 @@ def home():
     logged_in = false
     Loginsession = make_response(render_template("logins.html"))
     Loginsession.set_cookie('SessionID','username')
-    print(Loginsession)
     LoginsessionID = request.cookies.get('SessionID')
-    print(LoginsessionID)
     locklogin = "Log in"
-    print('SessionID')
     #session[LoginCount] = 5
     #this line calls the html file to be used.
     return render_template("logins.html", Loginsession = Loginsession, Asset_List=Asset_List)
@@ -176,6 +173,7 @@ def Mainpage():
         #the line below is to collect the asset database and store in a variable that can be used by the html page
         Asset_List = session.query(AssetDB).all()
         #the Asset_List=Asset_List using the variable to create function that can be used in the html page
+        logged_in = false
         return render_template('base.html',Asset_List=Asset_List)
     else:
         return render_template('logins.html')
@@ -192,15 +190,9 @@ def Userpage():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    print(start_time)
     duration = default_timer() - start
-    print(duration)
     Loginsession.set_cookie('SessionID','username')
     LoginsessionID = request.cookies.get('SessionID')
-    print("aaaaa1")
-    print(LoginsessionID)
-    print(Loginsession)
-    print("aaaaa2")
     if 'SessionID' in request.cookies:
         print("Yes")
     else:
@@ -220,33 +212,34 @@ def do_admin_login():
     s = Session()
     query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]), User.admin.in_([adminbool]))
     result = query.first()
+    print(result.username)
+    print(result.password)
+    print(result.admin)
     if result:
         if result.admin == True:
             Admincheck = True
-        #session['logged_in'] = True
-        logged_in = true
-        return redirect(url_for("Mainpage"))
+        if LoginCount <= 0:
+            return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
+        else:
+                logged_in = true
+                return redirect(url_for("Mainpage"))
     else:
-        print(LoginCount)
         LoginCount -= 1
         if LoginCount==1:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
-            print(LoginCount)
-            return render_template('logins.html',incorrect = ('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error'))
-        if LoginCount<0:
+            return render_template('logins.html',incorrect = ('This is your last attempt, Attempt %d of 5'  % (LoginCount)))
+        if LoginCount<=0:
             client_ip= session.get('client_ip')
             cookietest= session.get("what")
-            print(LoginCount)
-            print(client_ip)
-            print(cookietest)
             #flash('This is your last attempt, %s will be blocked for 24hr, Attempt %d of 5'  % (client_ip,LoginCount), 'error 2')
             return render_template('logins.html',incorrect = ("LOGIN LOCKED"), LockedLogin = ("disabled"), locklogin = ("LOGIN LOCKED"))
         #render_template('logins.html',LockedLogin = ("disabled"))
         #return render_template('logins.html',LoginCountView = (LoginCount))
         #return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         else:
-            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5  % LoginCount, error 1'))
+            client_ip= session.get('client_ip')
+            return render_template('logins.html',incorrect = ('Invalid login credentials, Attempts %d of 5' % (LoginCount)))
             flash('Invalid login credentials, Attempts %d of 5'  % LoginCount, 'error')
         return render_template('logins.html',incorrect = ("ERROR please input User Or Admin Details"))
         
