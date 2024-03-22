@@ -212,9 +212,6 @@ def do_admin_login():
     s = Session()
     query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]), User.admin.in_([adminbool]))
     result = query.first()
-    print(result.username)
-    print(result.password)
-    print(result.admin)
     if result:
         if result.admin == True:
             Admincheck = True
